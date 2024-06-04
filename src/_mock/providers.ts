@@ -1,5 +1,5 @@
 // these files would ideally be .JSON but it wouldnt let me leave comments :p
-import juneData from "../_mock/filtered_june_2024_datetime_strings.json";
+import juneData from "./filtered_june_2024_datetime_strings.json";
 
 // basing this demo off one singular provider for simplicity
 const providersMockData = {
