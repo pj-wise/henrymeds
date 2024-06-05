@@ -1,16 +1,22 @@
-import { useState } from "react";
-import providersMockData from "./_mock/providers";
-import ProvidersForm from "./components/ProvidersForm";
-import "./App.css";
+import React from 'react';
+import ProvidersForm from './components/ProvidersForm';
+import ClientsView from './components/ClientsView';
 
-function App() {
+const App: React.FC = () => {
+  const handleProviderSubmit = (date: string, startTime: string, endTime: string) => {
+    console.log('Provider submitted: ', date, startTime, endTime);
+  };
+
+  const handleClientConfirm = (slotId: number) => {
+    console.log('Client confirmed slot: ', slotId);
+  };
+
   return (
-    <>
-      <h1>Henry Meds</h1>
-      <h3>{providersMockData.name}</h3>
-      <ProvidersForm />
-    </>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-10">
+      <ProvidersForm onSubmit={handleProviderSubmit} />
+      <ClientsView onConfirm={handleClientConfirm} />
+    </div>
   );
-}
+};
 
 export default App;

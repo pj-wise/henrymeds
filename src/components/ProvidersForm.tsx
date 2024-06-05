@@ -1,36 +1,83 @@
-import React from "react";
-import providersMockData from "../_mock/providers";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Box from "@mui/material/Box";
+import React, { useState } from 'react';
+import { TextField, Button, Snackbar, Alert } from '@mui/material';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
 
-const ProvidersForm = () => {
+interface ProvidersFormProps {
+  onSubmit: (date: string, startTime: string, endTime: string) => void;
+}
+
+const ProvidersForm: React.FC<ProvidersFormProps> = ({ onSubmit }) => {
+  const [date, setDate] = useState<dayjs.Dayjs | null>(null);
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+
+  const handleDateChange = (newValue: dayjs.Dayjs | null) => {
+    setDate(newValue);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (date && startTime && endTime) {
+      onSubmit(date.format('YYYY-MM-DD'), startTime, endTime);
+      setOpenSnackbar(true);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
   return (
-    <div className="w-100">
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker className="my-2" label="date picker" />
-      </LocalizationProvider>
-      <FormControl fullWidth>
-        <InputLabel id="booking-selection">Book time</InputLabel>
-        <Select
-          className="tw-my-2"
-          labelId="booking-selection-label"
-          id="simple-select"
-          value={providersMockData.schedule}
-          label="Schedule"
-          //   onChange={handleChange}
-        >
-          {providersMockData.schedule.map((time) => {
-            return <MenuItem value={time}>{time}</MenuItem>;
-          })}
-        </Select>
-      </FormControl>
-    </div>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <div className="max-w-md mx-auto p-4 bg-white shadow-md rounded-lg mb-8">
+        <h2 className="text-2xl font-semibold text-center mb-4">Provider Schedule Management</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <DatePicker
+            label="Select Date"
+            value={date}
+            onChange={handleDateChange}
+            renderInput={(params) => <TextField {...params} fullWidth />}
+          />
+          <TextField
+            label="Start Time"
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300, // 5 minutes
+            }}
+            fullWidth
+          />
+          <TextField
+            label="End Time"
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            inputProps={{
+              step: 300, // 5 minutes
+            }}
+            fullWidth
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Submit Schedule
+          </Button>
+        </form>
+        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+          <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+            Schedule submitted successfully!
+          </Alert>
+        </Snackbar>
+      </div>
+    </LocalizationProvider>
   );
 };
 
